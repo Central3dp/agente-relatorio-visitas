@@ -11,8 +11,9 @@ st.title("📊 Gerador Inteligente de Relatórios de Visitas")
 class PDF(FPDF):
     def __init__(self):
         super().__init__()
-        self.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
-        self.add_font("DejaVu", "B", "DejaVuSans-Bold.ttf", uni=True)
+        font_path = os.path.dirname(__file__)
+        self.add_font("DejaVu", "", os.path.join(font_path, "DejaVuSans.ttf"), uni=True)
+        self.add_font("DejaVu", "B", os.path.join(font_path, "DejaVuSans-Bold.ttf"), uni=True)
         self.set_font("DejaVu", size=12)
 
 uploaded_file = st.file_uploader("📤 Envie a planilha Excel (.xlsx) com dados de visitas")
@@ -40,51 +41,4 @@ if uploaded_file is not None:
 
     tabela_texto = formatar_tabela(tabela)
     resumos = df["Resumo da visita"].str.lower().dropna()
-    temas = {
-        "Dentistas ausentes": "não estava|não encontrado|ausente|fechada",
-        "Agradecimentos": "agradeceu|agradecimento",
-        "Reclamações": "reclamaç|problema",
-        "Dúvidas": "dúvida",
-        "Exames": "exame",
-    }
-    temas_resumos = {}
-    for tema, pattern in temas.items():
-        encontrados = resumos[resumos.str.contains(pattern, na=False)]
-        temas_resumos[tema] = encontrados.sample(min(3, len(encontrados))).tolist()
-
-    pdf = PDF()
-    pdf.add_page()
-    pdf.set_font("DejaVu", style="B", size=14)
-    pdf.cell(0, 10, "Análise das Visitas - Relatório Inteligente", ln=True)
-
-    pdf.set_font("DejaVu", size=11)
-    pdf.multi_cell(0, 10, f"Data do Relatório: {datetime.today().strftime('%d/%m/%Y')}")
-
-    pdf.set_font("DejaVu", style="B", size=12)
-    pdf.cell(0, 10, "Resumo Quantitativo das Visitas", ln=True)
-    pdf.set_font("DejaVu", size=9)
-    pdf.multi_cell(0, 5, tabela_texto)
-
-    pdf.set_font("DejaVu", style="B", size=12)
-    pdf.cell(0, 10, "Resumo Geral", ln=True)
-    pdf.set_font("DejaVu", size=11)
-    pdf.multi_cell(0, 10, "Este relatório apresenta uma análise criteriosa das visitas realizadas durante o mês, agrupadas por temas.")
-
-    for tema, exemplos in temas_resumos.items():
-        pdf.set_font("DejaVu", style="B", size=12)
-        pdf.cell(0, 10, tema, ln=True)
-        pdf.set_font("DejaVu", size=11)
-        for exemplo in exemplos:
-            pdf.multi_cell(0, 8, f"• {exemplo.strip()}")
-        if tema == "Dentistas ausentes":
-            pdf.set_text_color(200, 0, 0)
-            pdf.set_font("DejaVu", style="B", size=11)
-            pdf.multi_cell(0, 10, "Sugestão: CONFIRMAR PRÉVIAMENTE as visitas para evitar frustrações.")
-            pdf.set_text_color(0, 0, 0)
-
-    buffer = BytesIO()
-    pdf.output(buffer)
-    buffer.seek(0)
-
-    st.success("✅ Relatório gerado com sucesso!")
-    st.download_button(label="📥 Baixar PDF do Relatório", data=buffer, file_name="relatorio_visitas.pdf", mime="application/pdf")
+    te
