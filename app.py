@@ -12,6 +12,7 @@ class PDF(FPDF):
     def __init__(self):
         super().__init__()
         self.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
+        self.add_font("DejaVu", "B", "DejaVuSans-Bold.ttf", uni=True)
         self.set_font("DejaVu", size=12)
 
 uploaded_file = st.file_uploader("📤 Envie a planilha Excel (.xlsx) com dados de visitas")
